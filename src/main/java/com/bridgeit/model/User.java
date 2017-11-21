@@ -3,12 +3,13 @@ package com.bridgeit.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.stereotype.Component;
 
-@Component
+
 @Entity
-@Table(name="registration")
+@Table(name="Registration")
 public class User {
 	
 	@Id
@@ -16,6 +17,16 @@ public class User {
 	
 	private long number;
 	private String userName,password;
+	
+	@Transient
+	private String confirmPassword;
+	
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
 	public long getNumber() {
 		return number;
 	}

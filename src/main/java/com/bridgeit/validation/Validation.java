@@ -8,28 +8,64 @@ import com.bridgeit.model.User;
 public class Validation {
 
 	
-	
-public boolean userValidate(User user) {
-	boolean status=true;
-	String email="/^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$/";
-	String number="/^([9]{1})([234789]{1})([0-9]{8})$/";
-	String username="/^[a-zA-Z]{4,15}/";
-	String userNumber=Long.toString(user.getNumber());
-	
-	
+//	
+//public boolean userValidate(User user) {
+//	boolean status=true;
+//	String email="/^([\\w-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([\\w-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$/;";
+//	String number="^[0-9]{10}$";
+//	String username="^[a-zA-Z]{4,}(?: [a-zA-Z]+){0,2}$";
+//	String userNumber=Long.toString(user.getNumber());
+//	
+//	
 //	if(!(user.getUserName()).matches(username)) {
 //		System.out.println("user");
 //		return false;
 //	}
-//	if(!email.matches(user.getEmail())) {
+//	if(!(user.getEmail()).matches(email)) {
 //		System.out.println("email");
 //		return false;
 //	}
-//	if(!number.matches(userNumber)) {
+//	if(!userNumber.matches(number)) {
 //		System.out.println("number");
 //		return false;
 //	}
-	return status;
+//	return status;
+//}
+
+public  boolean userValidate(User user) {
+	String userNumber=Long.toString(user.getNumber());
+	boolean valid = true;
+	String phoneNumRegx = "^[0-9]{10}$";
+	String nameRegx = "^[a-zA-Z]{4,}(?: [a-zA-Z]+){0,2}$";
+	String emailRegx =   "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	if (!user.getUserName().matches(nameRegx)) {
+		System.out.println("user");
+		valid = false;
+	} else
+
+	if (!userNumber.matches(phoneNumRegx)) {
+		System.out.println("number");
+		valid = false;
+	} else
+
+	if (!user.getEmail().matches(emailRegx)) {
+		System.out.println("email");
+		valid = false;
+	} else if (user.getPassword().length() < 7 || user.getPassword().length() > 16) {
+		System.out.println("length");
+		valid = false;
+	} else
+
+	if (!user.getPassword().equals(user.getConfirmPassword())) {
+		
+		System.out.println("confirm "+user.getConfirmPassword()+" "+user.getPassword());
+		valid = false;
+	} else {
+		valid = true;
+	}
+	return valid;
 }
+
+
 	
 }

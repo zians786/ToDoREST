@@ -5,16 +5,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bridgeit.model.User;
 import com.bridgeit.service.Service;
 import com.bridgeit.validation.Validation;
-@Controller
+
+@RestController
 public class AppController {
 	
 
@@ -22,46 +28,42 @@ public class AppController {
 	Service service;
 
 	@Autowired
-	User user;
-	
-	@Autowired
 	Validation validate;
 		
-	 @RequestMapping(value = {"/registration"}, method = RequestMethod.POST)
-	 public ModelAndView registration(@ModelAttribute("register") User user ) {
-			ModelAndView modelAndView = new ModelAndView();
+	 @RequestMapping(value = {"/"}, method = RequestMethod.GET)
+	 public String welcome() {
+		 return "Welcome";
+	 }
+	
+	 @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
+	 public ResponseEntity<String> registration(@RequestBody User user) {
+			
 
 			if(validate.userValidate(user)) {
 				String message = service.registrationValidate(user);
-				modelAndView.setViewName("index");
-				modelAndView.addObject("message", message);
-				return modelAndView;
+				return new ResponseEntity<String>(message, HttpStatus.OK);
 			}else{
-			modelAndView.setViewName("registration");
-			modelAndView.addObject("message", "Please Enter Correct Values...");
-				return modelAndView;
+			String message= "Please Enter Correct Values...";
+				return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
 			}
 		
 }
 	 
 	 @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
-			public ModelAndView login(@ModelAttribute("loginForm") User user , HttpServletRequest request) {
+			public ResponseEntity<String> login(@RequestBody User user , HttpServletRequest request) {
 		
-				ModelAndView modelAndView = new ModelAndView();
 				String name=service.loginValidate(user);
 				if(name!=null) {
 					
 					
 					HttpSession session=request.getSession();
-					session.setAttribute("details", user.getUserName());
-					modelAndView.setViewName("dashboard");
-					return modelAndView;
+					String message= "Welcome "+user.getUserName();
+					
+					return new ResponseEntity<String>(message, HttpStatus.OK);
 					
 				}else {
-					modelAndView.setViewName("index");
-
-					modelAndView.addObject("message", "Invalid Username or Password");
-					return modelAndView;
+					String message= "Invalid Username or Password";
+					return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
 
 				}
 				
@@ -71,14 +73,16 @@ public class AppController {
 
 		
 	 @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
-		public ModelAndView logout(HttpServletRequest request) {
-			ModelAndView modelAndView = new ModelAndView();
+		public ResponseEntity<String> logout(HttpServletRequest request) {
+		 String message="No Active Session";
 			HttpSession session=request.getSession();
+			if(session.isNew()) {
+				return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
+			}
 			session.invalidate();
-			modelAndView.setViewName("index");
-
-			modelAndView.addObject("message", "Logout Successfully...");
-			return modelAndView;
+		
+			message="Logout Successfully...";
+			return new ResponseEntity<String>(message, HttpStatus.OK);
 			
 		}
 	 

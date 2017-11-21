@@ -2,27 +2,34 @@
 package com.bridgeit.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import com.bridgeit.dao.LoginDao;
-import com.bridgeit.dao.RegistrationDao;
+import org.springframework.transaction.annotation.Transactional;
+import com.bridgeit.dao.UserDao;
 import com.bridgeit.model.User;
+import com.bridgeit.validation.Encryption;
 
 @Component
+@Transactional
 public class ServiceImp implements Service{
 
 	@Autowired
-	RegistrationDao register;
+	UserDao userDao;
+	
 	@Autowired
-	LoginDao login;
+	Encryption encrypt;
+	
 	
 	public String registrationValidate(User user) {
-		String result=register.emailValidaton(user);
+		user.setPassword(encrypt.encryptPassword(user.getPassword()));
+		String result=userDao.emailValidaton(user);
 		return result;
 		}
 	
 	public String loginValidate(User user) {
-		String result=login.loginValidate();
+		user.setPassword(encrypt.encryptPassword(user.getPassword()));
+		String result=userDao.loginValidate(user);
 		return result;
 		
 	}
