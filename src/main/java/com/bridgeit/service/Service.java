@@ -6,6 +6,10 @@ public interface Service {
 	
 
 	String registrationValidate(User user);
-
+		
+	String verifyToken(String token);
+	
 	String loginValidate(User user);
+	
+	String forgetPassword(String email);
 }

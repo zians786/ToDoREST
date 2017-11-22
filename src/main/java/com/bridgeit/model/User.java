@@ -17,9 +17,20 @@ public class User {
 	
 	private long number;
 	private String userName,password;
+	Boolean active;
 	
+
 	@Transient
 	private String confirmPassword;
+	
+	
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
 	
 	public String getConfirmPassword() {
 		return confirmPassword;

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,68 +23,78 @@ import com.bridgeit.validation.Validation;
 
 @RestController
 public class AppController {
-	
 
 	@Autowired
 	Service service;
 
 	@Autowired
 	Validation validate;
-		
-	 @RequestMapping(value = {"/"}, method = RequestMethod.GET)
-	 public String welcome() {
-		 return "Welcome";
-	 }
+
 	
-	 @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
-	 public ResponseEntity<String> registration(@RequestBody User user) {
-			
+	@RequestMapping(value = { "/" }, method = RequestMethod.GET)
+	public String welcome() {
+		return "Welcome";
+	}
 
-			if(validate.userValidate(user)) {
-				String message = service.registrationValidate(user);
-				return new ResponseEntity<String>(message, HttpStatus.OK);
-			}else{
-			String message= "Please Enter Correct Values...";
-				return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
-			}
-		
-}
-	 
-	 @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
-			public ResponseEntity<String> login(@RequestBody User user , HttpServletRequest request) {
-		
-				String name=service.loginValidate(user);
-				if(name!=null) {
-					
-					
-					HttpSession session=request.getSession();
-					String message= "Welcome "+user.getUserName();
-					
-					return new ResponseEntity<String>(message, HttpStatus.OK);
-					
-				}else {
-					String message= "Invalid Username or Password";
-					return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
 
-				}
-				
+	@RequestMapping(value = { "/register" }, method = RequestMethod.POST)
+	public ResponseEntity<String> registration(@RequestBody User user) {
 
-			
-			}
-
-		
-	 @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
-		public ResponseEntity<String> logout(HttpServletRequest request) {
-		 String message="No Active Session";
-			HttpSession session=request.getSession();
-			if(session.isNew()) {
-				return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
-			}
-			session.invalidate();
-		
-			message="Logout Successfully...";
+		if (validate.userValidate(user)) {
+			String message = service.registrationValidate(user);
 			return new ResponseEntity<String>(message, HttpStatus.OK);
-			
+		} else {
+			String message = "Please Enter Correct Values...";
+			return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
 		}
-	 
-	 }
+	}
+
+	
+	@RequestMapping(value = { "/login" }, method = RequestMethod.POST)
+	public ResponseEntity<String> login(@RequestBody User user, HttpServletRequest request) {
+
+		String name = service.loginValidate(user);
+		if (name != null) {
+
+			HttpSession session = request.getSession();
+			String message = "Welcome " + user.getUserName();
+
+			return new ResponseEntity<String>(message, HttpStatus.OK);
+
+		} else {
+			String message = "Invalid Username or Password";
+			return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
+		}
+	}
+
+	@RequestMapping(value= "/activate/{jwt:.+}",method=RequestMethod.POST)
+	public ResponseEntity<String>activation(@PathVariable String jwt){
+		String status=service.verifyToken(jwt);
+		return new ResponseEntity<String>(status, HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(value= {"/forgot"},method=RequestMethod.POST)
+	public ResponseEntity<String> forgot(@RequestBody User user){
+	
+		String message=service.forgetPassword(user.getEmail());
+		return new ResponseEntity<String>(message, HttpStatus.OK);
+		
+	}
+	
+	
+	@RequestMapping(value = { "/logout" }, method = RequestMethod.POST)
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		String message = "No Active Session";
+		HttpSession session = request.getSession();
+		if (session.isNew()) {
+			return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
+		}
+		session.invalidate();
+
+		message = "Logout Successfully...";
+		return new ResponseEntity<String>(message, HttpStatus.OK);
+
+	}
+
+}
