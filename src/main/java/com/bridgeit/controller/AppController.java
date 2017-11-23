@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bridgeit.model.Response;
 import com.bridgeit.model.User;
 import com.bridgeit.service.Service;
 import com.bridgeit.validation.Validation;
@@ -26,9 +27,9 @@ public class AppController {
 
 	@Autowired
 	Service service;
-
 	@Autowired
 	Validation validate;
+
 
 	
 	@RequestMapping(value = { "/" }, method = RequestMethod.GET)
@@ -51,19 +52,19 @@ public class AppController {
 
 	
 	@RequestMapping(value = { "/login" }, method = RequestMethod.POST)
-	public ResponseEntity<String> login(@RequestBody User user, HttpServletRequest request) {
-
-		String name = service.loginValidate(user);
-		if (name != null) {
+	public ResponseEntity<Response> login(@RequestBody User user, HttpServletRequest request) {
+		Response response=new Response();
+		String token = service.loginValidate(user);
+		if (token != null) {
 
 			HttpSession session = request.getSession();
-			String message = "Welcome " + user.getUserName();
-
-			return new ResponseEntity<String>(message, HttpStatus.OK);
+			response.setMessage("Welcome " + user.getUserName()); 
+			response.setToken(token);
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
 
 		} else {
-			String message = "Invalid Username or Password";
-			return new ResponseEntity<String>(message, HttpStatus.CONFLICT);
+			response.setMessage("Invalid Username or Password");
+			return new ResponseEntity<Response>(response, HttpStatus.CONFLICT);
 		}
 	}
 

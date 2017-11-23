@@ -35,7 +35,8 @@ public class ServiceImp implements Service {
 			return "User Already Exist with this Email...";
 		} else {
 			userDao.registerUser(user);
-			String jwToken = jwt.jwtGenerator(user);
+			String id=Integer.toString(user.getUserId());
+			String jwToken = jwt.jwtGenerator(id);
 
 			email.registrationEmail(user.getEmail(), jwToken);
 
@@ -46,29 +47,35 @@ public class ServiceImp implements Service {
 	}
 
 	public String loginValidate(User user) {
+		String jwToken;
 		user.setPassword(encrypt.encryptPassword(user.getPassword()));
-		String result = userDao.loginValidate(user);
+		if(userDao.loginValidate(user)) {
+			int id=userDao.getUserId(user.getUserName());
+			String uid=Integer.toString(id);
+			jwToken = jwt.jwtGenerator(uid);
+		}else {
+			jwToken =null;
+		}
 
-		return result;
+		return jwToken;
 
 	}
 
 	public String verifyToken(String token) {
-		String email = jwt.jwtVerify(token);
+		String uid = jwt.jwtVerify(token);
+		int userId=Integer.parseInt(uid);
+		
 		String result = null;
-		if (email != null) {
-
-			if (userDao.activateUser(email) > 0) {
+		
+			if (userDao.activateUser(userId) > 0) {
 				result = "Your Account has been Activated...";
 			} else {
-				result = "Your Account is Already Active";
+				result = "Invalid Token or User may not Registered with us..";
 			}
-
-		} else {
-			result = "Invalid Token or User may not Registered with us..";
-		}
-		return result;
-	}
+			return result;
+		} 
+		
+	
 
 	public String forgetPassword(String userEmail) {
 		String result = null;

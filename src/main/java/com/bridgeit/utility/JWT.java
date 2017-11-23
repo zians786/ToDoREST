@@ -14,11 +14,11 @@ public class JWT {
 
 	final String key = "qazxswedc";
 
-	public String jwtGenerator(User user) {
+	public String jwtGenerator(String id) {
 
 		String jwToken = Jwts.builder()
 				.setSubject("Registration")
-				.setId(user.getEmail())
+				.setId(id)
 				.signWith(SignatureAlgorithm.HS512, key)
 				.compact();
 

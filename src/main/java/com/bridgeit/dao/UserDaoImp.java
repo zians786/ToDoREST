@@ -19,15 +19,15 @@ public class UserDaoImp implements UserDao {
 	}
 
 	@Override
-	public String loginValidate(User user) {
+	public Boolean loginValidate(User user) {
 		Query query = getSession().createQuery("select email from User where userName='" + user.getUserName()
-				+ "' and password='" + user.getPassword() + "'");
+				+ "' and password='" + user.getPassword() + "'and active=true");
 		String result = (String) query.uniqueResult();
-		String name = null;
+		Boolean status=false;
 		if (result != null) {
-			name = "true";
+			status = true;
 		}
-		return name;
+		return status;
 	}
 
 	@Override
@@ -47,10 +47,10 @@ public class UserDaoImp implements UserDao {
 	}
 
 	@Override
-	public int activateUser(String email) {
-		Query query=getSession().createQuery("update User set active=:a where email=:e");
+	public int activateUser(int userId) {
+		Query query=getSession().createQuery("update User set active=:a where userId=:e");
 		query.setParameter("a", true);
-		query.setParameter("e", email);
+		query.setParameter("e", userId);
 		int result=query.executeUpdate();
 		return result;
 	}
@@ -66,6 +66,13 @@ public class UserDaoImp implements UserDao {
 
 		Query query = getSession().createQuery("select password from User where email='" + email + "'");
 		String result = (String) query.uniqueResult();
+		return result;
+	}
+
+	@Override
+	public int getUserId(String userName) {
+		Query query = getSession().createQuery("select userId from User where userName='" + userName + "'");
+		int result=(int)query.uniqueResult();
 		return result;
 	}
 

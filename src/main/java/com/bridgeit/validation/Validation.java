@@ -55,12 +55,7 @@ public  boolean userValidate(User user) {
 		System.out.println("length");
 		valid = false;
 	} else
-
-	if (!user.getPassword().equals(user.getConfirmPassword())) {
-		
-		System.out.println("confirm "+user.getConfirmPassword()+" "+user.getPassword());
-		valid = false;
-	} else {
+	{
 		valid = true;
 	}
 	return valid;
